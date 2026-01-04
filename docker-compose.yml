@@ -1,0 +1,32 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_dev
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mouloud1234
+      MYSQL_DATABASE: hotel_reservation
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  app:
+    build: .
+    container_name: spring_dev
+    volumes:
+      - .:/app/
+      - maven_repo:/root/.m2
+    ports:
+      - "8093:8093"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/hotel_reservation?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: mouloud1234
+    command: mvn spring-boot:run
+
+volumes:
+  mysql_data:
+  maven_repo:

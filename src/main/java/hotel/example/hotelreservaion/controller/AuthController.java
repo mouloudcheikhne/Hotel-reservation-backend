@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class AuthController {
     @GetMapping("/test")
     public String getMethodName() {
-        return new String("hello project started");
+        return new String("hello project started mouloud test");
     }
     
     
