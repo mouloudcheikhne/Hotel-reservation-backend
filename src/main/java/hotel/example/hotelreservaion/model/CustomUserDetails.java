@@ -15,12 +15,12 @@ public class CustomUserDetails implements UserDetails {
     private List<GrantedAuthority> authorities;
 
     
-    public CustomUserDetails(String nom, String prenom, String email, String password, String role) {
+    public CustomUserDetails(String nom, String prenom, String email, String password, UserRole role) {
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
         this.password = password;
-        this.authorities = List.of(new SimpleGrantedAuthority(role));  
+        this.authorities = List.of(new SimpleGrantedAuthority(role.name()));  
     }
 
     @Override
