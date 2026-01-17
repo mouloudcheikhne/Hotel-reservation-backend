@@ -2,6 +2,9 @@ package hotel.example.hotelreservaion.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -35,5 +38,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole role;
     @OneToMany(mappedBy = "user",cascade =CascadeType.ALL)
+    @JsonIgnore
     private List<Booking>bookings;
 }

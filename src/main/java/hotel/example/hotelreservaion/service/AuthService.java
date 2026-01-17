@@ -47,7 +47,7 @@ public class AuthService {
             errors.put("message", "Email already in use");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
         }
-        User newUser=User.builder().nom(data.getNom()).email(data.getEmail()).prenom(data.getPrenom()).password(passwordEncoder.encode(data.getPassword())).role(UserRole.ADMIN).build();
+        User newUser=User.builder().nom(data.getNom()).email(data.getEmail()).prenom(data.getPrenom()).password(passwordEncoder.encode(data.getPassword())).role(UserRole.USER).build();
         userReposiory.save(newUser);
         ResponceRegesterDtO responceResgister= ResponceRegesterDtO.builder().email(newUser.getEmail()).nom(newUser.getNom()).prenom(newUser.getPrenom()).role(UserRole.USER.name()).build();
         return ResponseEntity.ok(responceResgister);
