@@ -1,6 +1,7 @@
 package hotel.example.hotelreservaion.service;
 
 import java.sql.Date;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -77,6 +78,25 @@ public class ClientService {
         }catch(Exception e){
             Map<String, String> errors=new HashMap<>();
             errors.put("message", "An error occurred while adding booking"+e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errors);
+        }
+    }
+
+    public ResponseEntity<?> changeBookingStatus(Long bookingId,BookingStatus status){
+        try{
+            Optional<Booking> bookingOptionel=bookingRepo.findById(bookingId);
+            Map<String, String> errors=new HashMap<>();
+            if(!bookingOptionel.isPresent()){
+                errors.put("message", "Booking not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
+            }
+            Booking booking=bookingOptionel.get();
+            booking.setStatus(status);
+            Booking savedBooking=bookingRepo.save(booking);
+            return ResponseEntity.ok(savedBooking);
+        }catch(Exception e){
+            Map<String, String> errors=new HashMap<>();
+            errors.put("message", "An error occurred while changing booking status"+e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errors);
         }
     }
