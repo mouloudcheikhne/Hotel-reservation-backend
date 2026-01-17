@@ -111,5 +111,27 @@ public class RoomService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errors);
         }
     }
+    public ResponseEntity<?>changeStatusRoom(Long id){
+        try{
+            Map<String, String> errors=new HashMap<>();
+            Optional<Room> room=roomRepo.findById(id);
+            if(room.isEmpty()){
+                errors.put("message", "Room not found");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+            }
+            Room updatedRoom=room.get();
+            updatedRoom.setAvailable(!updatedRoom.getAvailable());
+            Room savedRoom=roomRepo.save(updatedRoom);
+            Map<String, Object> response=new HashMap<>();
+            response.put("message", "Room status changed successfully");
+            response.put("room", savedRoom);
+            return ResponseEntity.ok(response);
+        }
+        catch(Exception e){
+            Map<String, String> errors=new HashMap<>();
+            errors.put("message", "An error occurred while changing the status of the room"+e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errors);
+        }
+    }
 
 }

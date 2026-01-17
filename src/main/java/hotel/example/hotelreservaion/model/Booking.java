@@ -28,6 +28,7 @@ public class Booking {
     private Room room;
     private Date startDate;
     private Date endDate;
+    private double totalPrice;
      @Enumerated(EnumType.STRING)  
     private BookingStatus status;
    

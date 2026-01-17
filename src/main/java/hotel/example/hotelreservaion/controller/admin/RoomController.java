@@ -138,4 +138,8 @@ public class RoomController {
     public ResponseEntity<?> getAllRooms(){
         return roomService.getAllRooms();
     }
+    @PutMapping("/change-status/{id}")
+    public ResponseEntity<?> changeStatusRoom(@PathVariable Long id){
+        return roomService.changeStatusRoom(id);
+    }
 }
