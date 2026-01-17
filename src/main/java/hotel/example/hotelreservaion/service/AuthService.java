@@ -17,6 +17,7 @@ import hotel.example.hotelreservaion.dto.LoginDto;
 import hotel.example.hotelreservaion.dto.RegesterDto;
 import hotel.example.hotelreservaion.dto.ResponceLoginDto;
 import hotel.example.hotelreservaion.dto.ResponceRegesterDtO;
+import hotel.example.hotelreservaion.exception.CustomException;
 import hotel.example.hotelreservaion.model.CustomUserDetails;
 import hotel.example.hotelreservaion.model.User;
 import hotel.example.hotelreservaion.model.UserRole;
@@ -42,17 +43,18 @@ public class AuthService {
     public ResponseEntity<?> register(RegesterDto data){
         try{
   Optional<User> foundUser=userReposiory.findByEmail(data.getEmail());
-        Map<String, String> errors=new HashMap<>(); 
         if(foundUser.isPresent()){
-            errors.put("message", "Email already in use");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+            throw new CustomException("Email already in use", HttpStatus.BAD_REQUEST);
         }
         User newUser=User.builder().nom(data.getNom()).email(data.getEmail()).prenom(data.getPrenom()).password(passwordEncoder.encode(data.getPassword())).role(UserRole.USER).build();
         userReposiory.save(newUser);
         ResponceRegesterDtO responceResgister= ResponceRegesterDtO.builder().email(newUser.getEmail()).nom(newUser.getNom()).prenom(newUser.getPrenom()).role(UserRole.USER.name()).build();
         return ResponseEntity.ok(responceResgister);
-        }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during registration"+e.getMessage());
+        }catch(CustomException e){
+            throw e;
+        }
+        catch(Exception e){
+            throw new CustomException("An error occurred during registration"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
       
@@ -66,10 +68,10 @@ public class AuthService {
             ResponceLoginDto responceLogin= ResponceLoginDto.builder().email(data.getEmail()).nom(userDetails.getNom()).token(token).prenom(userDetails.getPrenom()).role(role).build();
 
             return ResponseEntity.ok( responceLogin);
+        }catch(CustomException e){
+            throw e;
         }catch(Exception e){
-            Map<String, String> errors=new HashMap<>();
-            errors.put("message", "Invalid email or password");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
+            throw new CustomException("Invalid email or password", HttpStatus.BAD_REQUEST);
         }
     }
     

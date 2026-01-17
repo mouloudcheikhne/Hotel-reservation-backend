@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import hotel.example.hotelreservaion.dto.AddRomeRequestDto;
 import hotel.example.hotelreservaion.dto.UpdateRomeDto;
+import hotel.example.hotelreservaion.exception.CustomException;
 import hotel.example.hotelreservaion.model.Room;
 import hotel.example.hotelreservaion.repository.RoomRepo;
 
@@ -23,50 +24,48 @@ public class RoomService {
     public ResponseEntity<?> getAllRooms(){
         try{
             List<Room> rooms=roomRepo.findAll();
-            Map<String, Object> response=new HashMap<>();
-            response.put("message", "Rooms fetched successfully");
-            response.put("rooms", rooms);
-            return ResponseEntity.ok(response);
-        }catch(Exception e){
-            Map<String, String> errors=new HashMap<>();
-            errors.put("message", "An error occurred while getting the rooms"+e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errors);
+            if(rooms.isEmpty()){
+                throw new CustomException("No rooms found", HttpStatus.NOT_FOUND);
+            }
+            return ResponseEntity.ok(rooms);
+        }
+        catch(CustomException e){
+            throw e;
+        }
+        catch(Exception e){
+            throw new CustomException("An error occurred while getting the rooms"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     public ResponseEntity<?> addRoom(AddRomeRequestDto data){
         try{
-            Map<String, String> errors=new HashMap<>();
             boolean exists=roomRepo.existsByRoomNumber(data.getRoomNumber());
             if(exists){
-                errors.put("message", "Room already exists");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+                throw new CustomException("Room already exists", HttpStatus.BAD_REQUEST);
             }
             Room newRoom=Room.builder().roomNumber(data.getRoomNumber()).type(data.getType()).price(data.getPrice()).available(false).description(data.getDescription()).imageUrl(data.getImageUrl()).build();
             Room savedRoom=roomRepo.save(newRoom);
-            Map<String, Object> response=new HashMap<>();
-            response.put("message", "Room added successfully");
-            response.put("room", savedRoom);
-            return ResponseEntity.ok(response);
-        }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while adding the room"+e.getMessage());
+            return ResponseEntity.ok(savedRoom);
+        }
+        catch(CustomException e){
+            throw e;
+        }
+        catch(Exception e){
+            throw new CustomException("An error occurred while adding the room"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     public ResponseEntity<?> updateRoom(UpdateRomeDto data,Long id){
         try{
-            Map<String, String> errors=new HashMap<>();
             Optional<Room> room=roomRepo.findById(id);
             if(room.isEmpty()){
-                errors.put("message", "Room not found");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+                throw new CustomException("Room not found", HttpStatus.NOT_FOUND);
             }
             Room existingRoom=room.get();
             if(data.getRoomNumber()!=null){
                 boolean exists=roomRepo.existsByRoomNumber(data.getRoomNumber());
                 if(exists){
-                    errors.put("message", "Room number already exists");
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+                    throw new CustomException("Room number already exists", HttpStatus.BAD_REQUEST);
                 }
                 existingRoom.setRoomNumber(data.getRoomNumber());
             }
@@ -87,37 +86,38 @@ public class RoomService {
             response.put("message", "Room updated successfully");
             response.put("room", updatedRoom);
             return ResponseEntity.ok(response);
-        }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating the room"+e.getMessage());
+        }
+        catch(CustomException e){
+            throw e;
+        }
+        catch(Exception e){
+            throw new CustomException("An error occurred while updating the room"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     public ResponseEntity<?> deleteRoom(Long id){
         try{
-            Map<String, String> errors=new HashMap<>();
+           
             Optional<Room> room=roomRepo.findById(id);
             if(room.isEmpty()){
-                errors.put("message", "Room not found");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+                throw new CustomException("Room not found", HttpStatus.NOT_FOUND);
             }
             roomRepo.delete(room.get());
-            Map<String, Object> response=new HashMap<>();
+            Map<String, String> response=new HashMap<>();
             response.put("message", "Room deleted successfully");
             return ResponseEntity.ok(response);
         }
-        catch(Exception e){
-            Map<String, String> errors=new HashMap<>();
-            errors.put("message", "An error occurred while deleting the room"+e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errors);
+        catch(CustomException e){
+            throw e;
         }
-    }
-    public ResponseEntity<?>changeStatusRoom(Long id){
+        catch(Exception e){
+            throw new CustomException("An error occurred while deleting the room"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }    public ResponseEntity<?>changeStatusRoom(Long id){
         try{
-            Map<String, String> errors=new HashMap<>();
             Optional<Room> room=roomRepo.findById(id);
             if(room.isEmpty()){
-                errors.put("message", "Room not found");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+                throw new CustomException("Room not found", HttpStatus.NOT_FOUND);
             }
             Room updatedRoom=room.get();
             updatedRoom.setAvailable(!updatedRoom.getAvailable());
@@ -127,10 +127,11 @@ public class RoomService {
             response.put("room", savedRoom);
             return ResponseEntity.ok(response);
         }
+        catch(CustomException e){
+            throw e;
+        }
         catch(Exception e){
-            Map<String, String> errors=new HashMap<>();
-            errors.put("message", "An error occurred while changing the status of the room"+e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errors);
+            throw new CustomException("An error occurred while changing the status of the room"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

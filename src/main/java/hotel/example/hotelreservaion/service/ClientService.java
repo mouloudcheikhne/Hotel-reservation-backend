@@ -1,8 +1,7 @@
 package hotel.example.hotelreservaion.service;
 
 import java.sql.Date;
-import java.util.HashMap;
-import java.util.Map;
+
 import java.util.Optional;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import hotel.example.hotelreservaion.dto.AddBookingDto;
+import hotel.example.hotelreservaion.exception.CustomException;
 import hotel.example.hotelreservaion.model.Booking;
 import hotel.example.hotelreservaion.model.BookingStatus;
 import hotel.example.hotelreservaion.model.Room;
@@ -31,54 +31,53 @@ public class ClientService {
         try{
             List<Room> rooms=roomRepo.findByAvailable(true);
             if(rooms.isEmpty()){
-                Map<String, String> errors=new HashMap<>();
-                errors.put("message", "No rooms found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
+                throw new CustomException("No rooms found", HttpStatus.NOT_FOUND);
             }
             return ResponseEntity.ok(rooms);
-        }catch(Exception e){
-            Map<String, String> errors=new HashMap<>();
-            errors.put("message", "An error occurred while getting all rooms"+e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errors);
+        }
+        catch(CustomException e){
+            throw e;
+        }
+        catch(Exception e){
+            throw new CustomException("An error occurred while getting all rooms"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     public ResponseEntity<?> getallBookings(){
         try{
             List<Booking> bookings=bookingRepo.findAll();
+            if(bookings.isEmpty()){
+                throw new CustomException("No bookings found", HttpStatus.NOT_FOUND);
+            }
             return ResponseEntity.ok(bookings);
 
-        }catch(Exception e){
-            Map<String, String> errors=new HashMap<>();
-            errors.put("message", "An error occurred while getting all bookings"+e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errors);
+        }
+        catch(CustomException e){
+            throw e;
+        }
+        catch(Exception e){
+            throw new CustomException("An error occurred while getting all bookings"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     public ResponseEntity<?> addBooking(AddBookingDto data,String email){
         try{
             Optional<User> user=userRepo.findByEmail(email);
-            Map<String, String> errors=new HashMap<>();
             if(!user.isPresent()){
-                errors.put("message", "User not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
+                throw new CustomException("User not found", HttpStatus.NOT_FOUND);
             }
             Optional<Room> roomOptionel=roomRepo.findById(data.getRoomId());
             if(!roomOptionel.isPresent()){
-                errors.put("message", "Room not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
+                throw new CustomException("Room not found", HttpStatus.NOT_FOUND);
             }
             Room room=roomOptionel.get();
             if(!room.getAvailable()){
-                errors.put("message", "Room is not available");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+                throw new CustomException("Room is not available", HttpStatus.BAD_REQUEST);
             }
             Date currentDate = new Date(System.currentTimeMillis());
             if(data.getStartDate().before(currentDate)){
-                errors.put("message", "Start date must be in the future");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+                throw new CustomException("Start date must be in the future", HttpStatus.BAD_REQUEST);
             }
             if(data.getStartDate().after(data.getEndDate())){
-                errors.put("message", "Start date must be before end date");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+                throw new CustomException("Start date must be before end date", HttpStatus.BAD_REQUEST);
             }
            
 
@@ -91,29 +90,31 @@ public class ClientService {
             room.setAvailable(false);
             roomRepo.save(room);
             return ResponseEntity.ok(savedBooking);
-        }catch(Exception e){
-            Map<String, String> errors=new HashMap<>();
-            errors.put("message", "An error occurred while adding booking"+e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errors);
+        }
+        catch(CustomException e){
+            throw e;
+        }
+        catch(Exception e){
+            throw new CustomException("An error occurred while adding booking"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     public ResponseEntity<?> changeBookingStatus(Long bookingId,BookingStatus status){
         try{
             Optional<Booking> bookingOptionel=bookingRepo.findById(bookingId);
-            Map<String, String> errors=new HashMap<>();
             if(!bookingOptionel.isPresent()){
-                errors.put("message", "Booking not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
+                throw new CustomException("Booking not found", HttpStatus.NOT_FOUND);
             }
             Booking booking=bookingOptionel.get();
             booking.setStatus(status);
             Booking savedBooking=bookingRepo.save(booking);
             return ResponseEntity.ok(savedBooking);
-        }catch(Exception e){
-            Map<String, String> errors=new HashMap<>();
-            errors.put("message", "An error occurred while changing booking status"+e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errors);
+        }
+        catch(CustomException e){
+            throw e;
+        }
+        catch(Exception e){
+            throw new CustomException("An error occurred while changing booking status"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

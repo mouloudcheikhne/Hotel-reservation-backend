@@ -20,5 +20,11 @@ public class ReceptionController {
     public ResponseEntity<?> getAllRoomAvailable() {
         return reseptionService.getAllRoomAvailable();
     }
+    @GetMapping("/rooms-reserved")
+    public ResponseEntity<?> getAllRoomReserved() {
+        return reseptionService.getallRoomReserved();
+    }
+
+    
     
 }
