@@ -63,7 +63,7 @@ public class AuthService {
             CustomUserDetails userDetails = myUserDetailsService.loadUserByUsername(data.getEmail());
             String role=userDetails.getAuthorities().iterator().next().getAuthority();
             String token=jwtUtil.generateToken(data.getEmail(), role);
-            ResponceLoginDto responceLogin= ResponceLoginDto.builder().email(data.getEmail()).token(token).prenom(userDetails.getPrenom()).role(role).build();
+            ResponceLoginDto responceLogin= ResponceLoginDto.builder().email(data.getEmail()).nom(userDetails.getNom()).token(token).prenom(userDetails.getPrenom()).role(role).build();
 
             return ResponseEntity.ok( responceLogin);
         }catch(Exception e){

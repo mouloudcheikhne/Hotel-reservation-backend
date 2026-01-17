@@ -1,7 +1,6 @@
 package hotel.example.hotelreservaion.service;
 
 import java.sql.Date;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -28,6 +27,21 @@ public class ClientService {
     private RoomRepo roomRepo;
     @Autowired
     private UserReposiory userRepo;
+    public ResponseEntity<?> getallRooms(){
+        try{
+            List<Room> rooms=roomRepo.findByAvailable(true);
+            if(rooms.isEmpty()){
+                Map<String, String> errors=new HashMap<>();
+                errors.put("message", "No rooms found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
+            }
+            return ResponseEntity.ok(rooms);
+        }catch(Exception e){
+            Map<String, String> errors=new HashMap<>();
+            errors.put("message", "An error occurred while getting all rooms"+e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errors);
+        }
+    }
     public ResponseEntity<?> getallBookings(){
         try{
             List<Booking> bookings=bookingRepo.findAll();
@@ -74,6 +88,8 @@ public class ClientService {
             Booking booking=Booking.builder().user(user.get()).room(room).startDate(data.getStartDate()).endDate(data.getEndDate()).totalPrice(totalPrice).status(BookingStatus.PENDING).build();
             // bookingRepo.save(booking);
             Booking savedBooking=bookingRepo.save(booking);
+            room.setAvailable(false);
+            roomRepo.save(room);
             return ResponseEntity.ok(savedBooking);
         }catch(Exception e){
             Map<String, String> errors=new HashMap<>();

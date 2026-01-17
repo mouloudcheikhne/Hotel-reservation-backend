@@ -42,7 +42,7 @@ public class UserService {
                 errors.put("message", "Email already in use");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
             }
-            User newUser=User.builder().nom(data.getNom()).prenom(data.getPrenom()).email(data.getEmail()).password(data.getPassword()).role(data.getRole()).build();
+            User newUser=User.builder().nom(data.getNom()).prenom(data.getPrenom()).email(data.getEmail()).password(passwordEncoder.encode(data.getPassword())).role(data.getRole()).build();
             User savedUser=userReposiory.save(newUser);
             return ResponseEntity.ok(savedUser);
         }catch(Exception e){
