@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,11 +17,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Room {
     @Id
      @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String roomNumber;
+    private Integer roomNumber;
     private String type;
     private Double price;
     private Boolean available;

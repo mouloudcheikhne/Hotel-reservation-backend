@@ -24,6 +24,7 @@ import hotel.example.hotelreservaion.util.*;
 @EnableWebSecurity
 public class SecurityConfig {
 
+
     @Autowired
     private JwtFilter jwtFilter;
     @Autowired
@@ -35,7 +36,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/").permitAll()
+                .requestMatchers("/api/auth/**", "/","/uploads/**").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/api/user/**").hasRole("USER")
                 .requestMatchers("/api/reseption/**").hasRole("RESEPTION")
