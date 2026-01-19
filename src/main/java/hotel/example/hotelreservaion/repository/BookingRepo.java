@@ -7,9 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import hotel.example.hotelreservaion.model.Booking;
 import hotel.example.hotelreservaion.model.BookingStatus;
+import hotel.example.hotelreservaion.model.Room;
 
 public interface BookingRepo  extends JpaRepository<Booking,Long>{
     
     List<Booking> findByStatusAndEndDateAfter(BookingStatus status, Date date);
+    List<Booking> findByRoom(Room room);
     
 }

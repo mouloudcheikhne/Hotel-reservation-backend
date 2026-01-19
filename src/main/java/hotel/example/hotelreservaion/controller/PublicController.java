@@ -3,10 +3,13 @@ package hotel.example.hotelreservaion.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import hotel.example.hotelreservaion.service.ClientService;
+
+
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -17,6 +20,11 @@ public class PublicController {
     public ResponseEntity<?> getAllRooms(){
         return clientService.getallRooms();
     }
+    @GetMapping("/dates-reserved/{roomId}")
+    public ResponseEntity<?> getDatesReserved(@PathVariable Long roomId) {
+        return clientService.getDatesReserved(roomId);
+    }
+    
 
     
 }
