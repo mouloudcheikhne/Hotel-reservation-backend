@@ -92,8 +92,8 @@ L'application utilise **Docker Compose** pour orchestrer l'ensemble de la stack 
 #### 1. Cloner le dépôt
 
 ```bash
-git clone <repository-url>
-cd hotelreservaion
+git clone https://github.com/mouloudcheikhne/Hotel-reservation-backend.git
+cd Hotel-reservation-backend
 ```
 
 #### 2. Lancer l'application avec Docker Compose
@@ -152,8 +152,8 @@ Si vous préférez exécuter l'application localement sans Docker :
 #### 1. Cloner le dépôt
 
 ```bash
-git clone <repository-url>
-cd hotelreservaion
+git clone https://github.com/mouloudcheikhne/Hotel-reservation-backend.git
+cd Hotel-reservation-backend
 ```
 
 #### 2. Configuration de la base de données
@@ -273,6 +273,8 @@ java -jar target/hotelreservaion-0.0.1-SNAPSHOT.jar
 
 La documentation interactive de l'API est **déjà configurée et disponible** grâce à Swagger/OpenAPI. Vous pouvez accéder à l'interface Swagger UI directement dans votre navigateur.
 
+> ℹ️ **Documentation détaillée** : des guides Markdown complémentaires sont disponibles dans le dossier `api_docs/` (voir `api_docs/README.md`).
+
 #### URLs d'accès :
 
 | Documentation | URL |
@@ -299,16 +301,16 @@ http://localhost:8093
 
 ### Endpoints publics
 
-#### 1. Test de connexion
+#### 1. Health-check
 
 ```http
-GET /?param=test
+GET /api/auth/test
 ```
 
 **Exemple :**
 
 ```bash
-curl http://localhost:8093/?param=test
+curl http://localhost:8093/api/auth/test
 ```
 
 #### 2. Inscription
@@ -318,11 +320,10 @@ POST /api/auth/register
 Content-Type: application/json
 
 {
-  "email": "user@example.com",
-  "password": "password123",
-  "firstName": "John",
-  "lastName": "Doe",
-  "role": "USER"
+  "nom": "Doe",
+  "prenom": "Jane",
+  "email": "jane.doe@example.com",
+  "password": "StrongPassword123"
 }
 ```
 
@@ -332,11 +333,10 @@ Content-Type: application/json
 curl -X POST http://localhost:8093/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "user@example.com",
-    "password": "password123",
-    "firstName": "John",
-    "lastName": "Doe",
-    "role": "USER"
+    "nom": "Doe",
+    "prenom": "Jane",
+    "email": "jane.doe@example.com",
+    "password": "StrongPassword123"
   }'
 ```
 
@@ -347,8 +347,8 @@ POST /api/auth/login
 Content-Type: application/json
 
 {
-  "email": "user@example.com",
-  "password": "password123"
+  "email": "jane.doe@example.com",
+  "password": "StrongPassword123"
 }
 ```
 
@@ -358,8 +358,8 @@ Content-Type: application/json
 curl -X POST http://localhost:8093/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "user@example.com",
-    "password": "password123"
+    "email": "jane.doe@example.com",
+    "password": "StrongPassword123"
   }'
 ```
 
@@ -368,27 +368,51 @@ curl -X POST http://localhost:8093/api/auth/login \
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "email": "user@example.com",
-  "role": "USER"
+  "nom": "Doe",
+  "prenom": "Jane",
+  "email": "jane.doe@example.com",
+  "role": "ROLE_USER"
 }
+```
+
+#### 4. Consultation des chambres publiques
+
+```http
+GET /api/rooms
+```
+
+**Exemple :**
+
+```bash
+curl http://localhost:8093/api/rooms
+```
+
+#### 5. Dates réservées d'une chambre
+
+```http
+GET /api/rooms/dates-reserved/{roomId}
+```
+
+**Exemple :**
+
+```bash
+curl http://localhost:8093/api/rooms/dates-reserved/12
 ```
 
 ### Endpoints protégés
 
 Tous les endpoints protégés nécessitent un token JWT dans l'en-tête `Authorization`.
 
-#### 4. Profil utilisateur
+#### Exemple : Récupérer toutes les réservations (rôle `ROLE_USER`)
 
 ```http
-GET /api/user/me
+GET /api/client/get-all-bookings
 Authorization: Bearer <TOKEN>
 ```
 
-**Exemple :**
-
 ```bash
 curl -H "Authorization: Bearer <TOKEN>" \
-  http://localhost:8093/api/user/me
+  http://localhost:8093/api/client/get-all-bookings
 ```
 
 ### Contrôleurs disponibles
@@ -396,11 +420,11 @@ curl -H "Authorization: Bearer <TOKEN>" \
 | Contrôleur                          | Description                            | Rôle requis |
 | ----------------------------------- | -------------------------------------- | ----------- |
 | `AuthController`                    | Authentification (login, register)     | Public      |
-| `PublicController`                  | Endpoints publics                      | Public      |
+| `PublicController`                  | Consultation des chambres              | Public      |
 | `ClientController`                  | Actions client (réservations)          | USER        |
+| `ReceptionController`               | Gestion réception (changement statut)  | RESEPTION   |
 | `admin/RoomController`              | Gestion des chambres (CRUD)            | ADMIN       |
 | `admin/UserController`              | Gestion des utilisateurs (CRUD)        | ADMIN       |
-| `ReceptionController`               | Gestion réception (changement statut)  | RESEPTION   |
 
 ---
 
@@ -1038,9 +1062,13 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
 ## 👤 Auteur
 
-**Mouloudissilayine**
+- **Mouloudissilayine**
+- **Zeini Cheikh Sidi Ely**
+- **Saleck Med Vadel Ameine**
+- **ahmed Essyad**
+- **Ahmedou Vall**
 
-- Projet : [Hotel Reservation](https://github.com/yourusername/hotelreservaion)
+- Projet : [Hotel Reservation Backend](https://github.com/mouloudcheikhne/Hotel-reservation-backend)
 
 ---
 
