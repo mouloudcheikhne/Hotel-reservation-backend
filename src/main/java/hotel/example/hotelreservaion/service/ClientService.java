@@ -1,6 +1,8 @@
 package hotel.example.hotelreservaion.service;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,9 +72,8 @@ public class ClientService {
             }
            
 
-            long timeDiff = data.getEndDate().getTime() - data.getStartDate().getTime();
-            Integer days = (int) (timeDiff / (1000 * 60 * 60 * 24));
-            double totalPrice=room.getPrice()*days;
+            Integer days = calculateDays(data.getStartDate(), data.getEndDate());
+            double totalPrice = calculatePrice(room.getPrice(), days);
             Booking booking=Booking.builder().user(user.get()).room(room).startDate(data.getStartDate()).endDate(data.getEndDate()).totalPrice(totalPrice).status(BookingStatus.PENDING).build();
             // bookingRepo.save(booking);
             Booking savedBooking=bookingRepo.save(booking);
@@ -142,5 +143,23 @@ public class ClientService {
         catch(Exception e){
             throw new CustomException("An error occurred while getting dates reserved"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    // Helper method to calculate number of days (by calendar date, ignoring time)
+    private Integer calculateDays(Date startDate, Date endDate){
+        LocalDate start = startDate.toLocalDate();
+        LocalDate end = endDate.toLocalDate();
+        long days = ChronoUnit.DAYS.between(start, end);
+        
+        // Minimum 1 day for same day reservation
+        if(days <= 0){
+            days = 1;
+        }
+        return (int) days;
+    }
+    
+    // Helper method to calculate total price
+    private double calculatePrice(double pricePerDay, Integer days){
+        return pricePerDay * days;
     }
 }

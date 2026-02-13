@@ -1,6 +1,8 @@
 package hotel.example.hotelreservaion.service;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -150,10 +152,9 @@ public class ReseptionService {
                 }
             }
             
-            // Calculate total price
-            long timeDiff = data.getEndDate().getTime() - data.getStartDate().getTime();
-            Integer days = (int) (timeDiff / (1000 * 60 * 60 * 24));
-            double totalPrice = roomObj.getPrice() * days;
+            // Calculate days and total price
+            Integer days = calculateDays(data.getStartDate(), data.getEndDate());
+            double totalPrice = calculatePrice(roomObj.getPrice(), days);
             
             // Create new booking
             Booking newBooking = Booking.builder()
@@ -224,9 +225,8 @@ public class ReseptionService {
                 existingBooking.setStartDate(data.getStartDate());
                 existingBooking.setEndDate(data.getEndDate());
                 
-                long timeDiff = data.getEndDate().getTime() - data.getStartDate().getTime();
-                Integer days = (int) (timeDiff / (1000 * 60 * 60 * 24));
-                double totalPrice = roomObj.getPrice() * days;
+                Integer days = calculateDays(data.getStartDate(), data.getEndDate());
+                double totalPrice = calculatePrice(roomObj.getPrice(), days);
                 existingBooking.setTotalPrice(totalPrice);
             }
             
@@ -304,6 +304,23 @@ public class ReseptionService {
             throw new CustomException("An error occurred while changing booking status: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    // Helper method to calculate number of days (by calendar date, ignoring time)
+    private Integer calculateDays(Date startDate, Date endDate){
+        LocalDate start = startDate.toLocalDate();
+        LocalDate end = endDate.toLocalDate();
+        long days = ChronoUnit.DAYS.between(start, end);
+        
+        // Minimum 1 day for same day reservation
+        if(days <= 0){
+            days = 1;
+        }
+        return (int) days;
+    }
     
+    // Helper method to calculate total price
+    private double calculatePrice(double pricePerDay, Integer days){
+        return pricePerDay * days;
+    }
 
 }
