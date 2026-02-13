@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import hotel.example.hotelreservaion.dto.ResponceGetDatesReserved;
 import hotel.example.hotelreservaion.exception.CustomException;
+import hotel.example.hotelreservaion.model.BookingStatus;
 import hotel.example.hotelreservaion.model.Room;
 import hotel.example.hotelreservaion.repository.BookingRepo;
 import hotel.example.hotelreservaion.repository.RoomRepo;
@@ -45,7 +46,14 @@ public class PublicService {
                 throw new CustomException("Room not found", HttpStatus.NOT_FOUND);
             }
             Room room=roomOptionel.get();
-            List<ResponceGetDatesReserved> datesReserved=bookingRepo.findByRoom(room).stream().map(booking -> ResponceGetDatesReserved.builder().startDate(booking.getStartDate()).endDate(booking.getEndDate()).build()).collect(Collectors.toList());
+            // Filter bookings: exclude cancelled bookings
+            List<ResponceGetDatesReserved> datesReserved=bookingRepo.findByRoom(room).stream()
+                    .filter(booking -> !booking.getStatus().equals(BookingStatus.CANCELLED))
+                    .map(booking -> ResponceGetDatesReserved.builder()
+                            .startDate(booking.getStartDate())
+                            .endDate(booking.getEndDate())
+                            .build())
+                    .collect(Collectors.toList());
             if(datesReserved.isEmpty()){
                 return ResponseEntity.ok(new ArrayList<>());
             }
