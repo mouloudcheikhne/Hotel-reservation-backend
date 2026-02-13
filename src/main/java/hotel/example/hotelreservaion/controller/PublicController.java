@@ -20,6 +20,11 @@ public class PublicController {
     public ResponseEntity<?> getAllRooms(){
         return clientService.getallRooms();
     }
+    @GetMapping("/{roomId}")
+    public ResponseEntity<?> getRoomById(@PathVariable Long roomId) {
+        return clientService.getRoomById(roomId);
+    }
+
     @GetMapping("/dates-reserved/{roomId}")
     public ResponseEntity<?> getDatesReserved(@PathVariable Long roomId) {
         return clientService.getDatesReserved(roomId);
