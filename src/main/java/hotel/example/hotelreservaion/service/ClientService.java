@@ -121,6 +121,22 @@ public class ClientService {
         }
     }
 
+    public ResponseEntity<?> getRoomById(Long roomId){
+        try{
+            Optional<Room> roomOptionel=roomRepo.findById(roomId);
+            if(!roomOptionel.isPresent()){
+                throw new CustomException("Room not found", HttpStatus.NOT_FOUND);
+            }
+            return ResponseEntity.ok(roomOptionel.get());
+        }
+        catch(CustomException e){
+            throw e;
+        }
+        catch(Exception e){
+            throw new CustomException("An error occurred while getting room"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public ResponseEntity<?> getDatesReserved(Long roomId){
         try{
             Optional<Room> roomOptionel=roomRepo.findById(roomId);
