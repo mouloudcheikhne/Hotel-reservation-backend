@@ -74,5 +74,7 @@ public class AuthService {
             throw new CustomException("Invalid email or password", HttpStatus.BAD_REQUEST);
         }
     }
+
+
     
 }

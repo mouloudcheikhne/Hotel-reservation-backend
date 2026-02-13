@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import hotel.example.hotelreservaion.service.ClientService;
+import hotel.example.hotelreservaion.service.PublicService;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -15,15 +17,18 @@ import hotel.example.hotelreservaion.service.ClientService;
 @RequestMapping("/api/rooms")
 public class PublicController {
     @Autowired
-    private ClientService clientService;
+    private PublicService publicService;
+
     @GetMapping("")
     public ResponseEntity<?> getAllRooms(){
-        return clientService.getallRooms();
+        return publicService.getallRooms();
     }
     @GetMapping("/dates-reserved/{roomId}")
     public ResponseEntity<?> getDatesReserved(@PathVariable Long roomId) {
-        return clientService.getDatesReserved(roomId);
+        return publicService.getDatesReserved(roomId);
     }
+    
+  
     
 
     
