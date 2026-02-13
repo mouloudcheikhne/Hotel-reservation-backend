@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import hotel.example.hotelreservaion.service.PublicService;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
+import hotel.example.hotelreservaion.service.ClientService;
 
 
 @RestController
@@ -19,9 +19,16 @@ public class PublicController {
     @Autowired
     private PublicService publicService;
 
+    @Autowired
+    private ClientService clientService;
     @GetMapping("")
     public ResponseEntity<?> getAllRooms(){
         return publicService.getallRooms();
+    }
+   
+     @GetMapping("/{roomId}")
+    public ResponseEntity<?> getRoomById(@PathVariable Long roomId) {
+        return clientService.getRoomById(roomId);
     }
     @GetMapping("/dates-reserved/{roomId}")
     public ResponseEntity<?> getDatesReserved(@PathVariable Long roomId) {

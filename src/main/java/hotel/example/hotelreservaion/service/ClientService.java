@@ -107,5 +107,40 @@ public class ClientService {
         }
     }
 
+    public ResponseEntity<?> getRoomById(Long roomId){
+        try{
+            Optional<Room> roomOptionel=roomRepo.findById(roomId);
+            if(!roomOptionel.isPresent()){
+                throw new CustomException("Room not found", HttpStatus.NOT_FOUND);
+            }
+            return ResponseEntity.ok(roomOptionel.get());
+        }
+        catch(CustomException e){
+            throw e;
+        }
+        catch(Exception e){
+            throw new CustomException("An error occurred while getting room"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
+    public ResponseEntity<?> getDatesReserved(Long roomId){
+        try{
+            Optional<Room> roomOptionel=roomRepo.findById(roomId);
+            if(!roomOptionel.isPresent()){
+                throw new CustomException("Room not found", HttpStatus.NOT_FOUND);
+            }
+            Room room=roomOptionel.get();
+            List<ResponceGetDatesReserved> datesReserved=bookingRepo.findByRoom(room).stream().map(booking -> ResponceGetDatesReserved.builder().startDate(booking.getStartDate()).endDate(booking.getEndDate()).build()).collect(Collectors.toList());
+            if(datesReserved.isEmpty()){
+                return ResponseEntity.ok(new ArrayList<>());
+            }
+            return ResponseEntity.ok(datesReserved);
+        }
+        catch(CustomException e){
+            throw e;
+        }
+        catch(Exception e){
+            throw new CustomException("An error occurred while getting dates reserved"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

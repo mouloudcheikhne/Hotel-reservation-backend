@@ -14,12 +14,12 @@ import lombok.Builder;
 @NoArgsConstructor
 @Builder
 public class AddBookingDto {
+    @NotNull(message = "user id is required")
+    private Long userId;
     @NotNull(message = "room id is required")
     private Long roomId;
     @NotNull(message = "start date is required")
     private Date startDate;
     @NotNull(message = "end date is required")
     private Date endDate;
-
-    
 }

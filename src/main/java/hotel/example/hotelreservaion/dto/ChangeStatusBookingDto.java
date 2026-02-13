@@ -1,5 +1,7 @@
 package hotel.example.hotelreservaion.dto;
 
+import java.sql.Date;
+
 import hotel.example.hotelreservaion.model.BookingStatus;
 // import hotel.example.hotelreservaion.validation.ValidBookingStatus;
 import jakarta.validation.constraints.NotNull;
@@ -16,5 +18,7 @@ public class ChangeStatusBookingDto {
     @NotNull(message = "status is required")
     // @ValidBookingStatus(message = "Invalid status. Valid statuses are: PENDING, CONFIRMED, CANCELLED")
     private BookingStatus status;
+    private Date startDate;
+    private Date endDate;
     
 }

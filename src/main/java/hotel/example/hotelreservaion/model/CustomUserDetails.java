@@ -20,7 +20,7 @@ public class    CustomUserDetails implements UserDetails {
         this.prenom = prenom;
         this.email = email;
         this.password = password;
-        this.authorities = List.of(new SimpleGrantedAuthority(role.name()));  
+        this.authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));  
     }
 
     @Override
