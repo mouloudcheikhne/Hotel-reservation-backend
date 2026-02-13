@@ -13,5 +13,6 @@ public interface RoomRepo  extends JpaRepository<Room,Long>{
     
     Optional<Room> findByRoomNumber(Integer roomNumber);
     List<Room> findByAvailable(Boolean available);
+    long countByAvailable(Boolean available);
 
 } 

@@ -192,7 +192,10 @@ public class ReseptionService {
                 throw new CustomException("Cannot update a booking that is already finished", HttpStatus.BAD_REQUEST);
             }
             
-            existingBooking.setStatus(data.getStatus());
+            // Update status only if provided
+            if(data.getStatus() != null){
+                existingBooking.setStatus(data.getStatus());
+            }
             
             // Update dates if provided
             if(data.getStartDate() != null && data.getEndDate() != null){

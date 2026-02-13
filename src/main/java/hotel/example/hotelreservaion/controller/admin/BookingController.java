@@ -51,4 +51,16 @@ public class BookingController {
     public ResponseEntity<?> deleteBooking(@PathVariable Long id){
         return bookingService.deleteBooking(id);
     }
+    
+    // Get all bookings for today
+    @GetMapping("/today")
+    public ResponseEntity<?> getAllBookingsToday(){
+        return bookingService.getAllBookingsToday();
+    }
+    
+    // Get analysis: all users, bookings and rooms
+    @GetMapping("/analysis")
+    public ResponseEntity<?> getAdminAnalysis(){
+        return bookingService.getAdminAnalysis();
+    }
 }

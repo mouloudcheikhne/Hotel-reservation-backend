@@ -1,5 +1,6 @@
 package hotel.example.hotelreservaion.service.admin;
 
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import hotel.example.hotelreservaion.dto.AddBookingDto;
+import hotel.example.hotelreservaion.dto.AdminAnalysisDto;
 import hotel.example.hotelreservaion.dto.ChangeStatusBookingDto;
 import hotel.example.hotelreservaion.exception.CustomException;
 import hotel.example.hotelreservaion.model.Booking;
@@ -205,6 +207,56 @@ public class BookingService {
         }
         catch(Exception e){
             throw new CustomException("An error occurred while deleting the booking: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    // Get all bookings for today
+    public ResponseEntity<?> getAllBookingsToday(){
+        try{
+            java.util.Date today = new java.util.Date();
+            Date todayDate = new Date(today.getTime());
+            
+            List<Booking> allBookings = bookingRepo.findAll();
+            
+            // Filter bookings where startDate == today
+            List<Booking> todayBookings = allBookings.stream()
+                    .filter(booking -> booking.getStartDate().equals(todayDate))
+                    .toList();
+            
+            if(todayBookings.isEmpty()){
+                throw new CustomException("No bookings for today", HttpStatus.NOT_FOUND);
+            }
+            
+            return ResponseEntity.ok(todayBookings);
+        }
+        catch(CustomException e){
+            throw e;
+        }
+        catch(Exception e){
+            throw new CustomException("An error occurred while getting bookings for today: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    // Get analysis: statistics only (counts)
+    public ResponseEntity<?> getAdminAnalysis(){
+        try{
+            // Use count queries instead of fetching all data
+            long totalUsers = userRepo.count();
+            long totalBookings = bookingRepo.count();
+            long totalRooms = roomRepo.count();
+            long reservedRooms = roomRepo.countByAvailable(false);
+            
+            AdminAnalysisDto analysis = AdminAnalysisDto.builder()
+                    .totalUsers((int) totalUsers)
+                    .totalBookings((int) totalBookings)
+                    .totalRooms((int) totalRooms)
+                    .reservedRooms((int) reservedRooms)
+                    .build();
+            
+            return ResponseEntity.ok(analysis);
+        }
+        catch(Exception e){
+            throw new CustomException("An error occurred while getting analysis: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
