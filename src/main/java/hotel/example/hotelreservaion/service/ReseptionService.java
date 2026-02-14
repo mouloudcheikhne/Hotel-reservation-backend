@@ -323,4 +323,31 @@ public class ReseptionService {
         return pricePerDay * days;
     }
 
+    // Get all bookings for today
+    public ResponseEntity<?> getAllBookingsToday(){
+        try{
+            java.util.Date today = new java.util.Date();
+            Date todayDate = new Date(today.getTime());
+            
+            List<Booking> allBookings = bookingRepo.findAll();
+            
+            // Filter bookings where startDate == today
+            List<Booking> todayBookings = allBookings.stream()
+                    .filter(booking -> booking.getStartDate().equals(todayDate))
+                    .toList();
+            
+            if(todayBookings.isEmpty()){
+                throw new CustomException("No bookings for today", HttpStatus.NOT_FOUND);
+            }
+            
+            return ResponseEntity.ok(todayBookings);
+        }
+        catch(CustomException e){
+            throw e;
+        }
+        catch(Exception e){
+            throw new CustomException("An error occurred while getting bookings for today: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

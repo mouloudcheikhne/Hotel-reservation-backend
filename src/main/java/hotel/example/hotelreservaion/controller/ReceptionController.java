@@ -43,7 +43,11 @@ public class ReceptionController {
     public ResponseEntity<?> getAllBookingsNotFinished(){
         return reseptionService.getAllBookingsNotFinished();
     }
-    
+
+    @GetMapping("/bookings/today")
+    public ResponseEntity<?> getAllBookingsToday(){
+        return reseptionService.getAllBookingsToday();
+    }
     
     // Add booking
     @PostMapping("/bookings/add")
